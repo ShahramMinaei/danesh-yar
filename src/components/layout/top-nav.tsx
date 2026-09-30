@@ -368,15 +368,18 @@ function DepthSlider() {
         style={{ height: TRACK_H }}
         className="relative mt-2.5 cursor-grab touch-none rounded-full bg-fg/8 ring-1 ring-inset ring-fg/8 select-none active:cursor-grabbing"
       >
-        {/* stop marks on the empty part of the track */}
-        {SCOPES.map((s, i) => (
-          <span
-            key={s.id}
-            aria-hidden
-            style={{ insetInlineStart: at(i / max, TRACK_H / 2) }}
-            className="absolute top-1/2 size-1 -translate-y-1/2 translate-x-1/2 rounded-full bg-fg/25"
-          />
-        ))}
+        {/* stop marks, only on the empty part of the track: under the semi-transparent
+            fill they would show through (and read as where the deep-mode sparks start) */}
+        {SCOPES.map((s, i) =>
+          i / max > frac + 0.01 ? (
+            <span
+              key={s.id}
+              aria-hidden
+              style={{ insetInlineStart: at(i / max, TRACK_H / 2) }}
+              className="absolute top-1/2 size-1 -translate-y-1/2 translate-x-1/2 rounded-full bg-fg/25"
+            />
+          ) : null,
+        )}
         {/* fill */}
         <div
           aria-hidden

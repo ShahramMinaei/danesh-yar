@@ -58,7 +58,11 @@ export function useDismiss(refs: RefObject<HTMLElement | null>[], open: boolean,
   useEffect(() => {
     if (!open) return;
     const down = (e: PointerEvent) => {
-      if (refs.every((r) => !r.current || !r.current.contains(e.target as Node))) onOutside();
+      // composedPath() is fixed at dispatch time: React may already have re-rendered and
+      // removed the pressed element (e.g. a slider mark) before this document listener
+      // runs, and a detached target would wrongly count as "outside"
+      const path = e.composedPath();
+      if (refs.every((r) => !r.current || !path.includes(r.current))) onOutside();
     };
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
