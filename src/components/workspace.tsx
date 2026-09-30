@@ -116,6 +116,7 @@ export function Workspace() {
             const el = e.currentTarget;
             stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
           }}
+          data-chat-scroller
           className="min-h-0 flex-1 overflow-y-auto"
         >
           {empty ? (

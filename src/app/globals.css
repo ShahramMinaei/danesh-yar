@@ -259,6 +259,14 @@
  * focus. On touch devices every text field is at least 16px, so typing never zooms
  * (pinch-zoom stays available, unlike the maximum-scale=1 workaround). Unlayered, so
  * it wins over the Tailwind text-size utilities without !important. */
+/* On phones the conversation's scrollbar is only a transient indicator, and it was
+ * drawn over the content's edge (the question bubble, the full-bleed source strip).
+ * Touch scrolling is unaffected. */
+@media (pointer: coarse) {
+  [data-chat-scroller] { scrollbar-width: none; }
+  [data-chat-scroller]::-webkit-scrollbar { display: none; }
+}
+
 @media (pointer: coarse) {
   input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
   textarea,
