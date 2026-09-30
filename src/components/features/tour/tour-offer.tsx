@@ -83,7 +83,8 @@ export function TourOffer() {
       }}
       className="m-auto w-[min(420px,calc(100vw-32px))] max-w-none overflow-visible bg-transparent p-0 text-fg backdrop:animate-fade-in backdrop:bg-(--backdrop) backdrop:backdrop-blur-[6px]"
     >
-      <div className="animate-pop-in overflow-hidden rounded-[16px] bg-surface text-center shadow-modal">
+      {/* initial focus lands on the card itself (not a button), so no focus ring shows on open; Tab still reaches both buttons */}
+      <div autoFocus tabIndex={-1} className="animate-pop-in overflow-hidden rounded-[16px] bg-surface text-center shadow-modal outline-none">
         {/* soft accent wash behind the mark */}
         <div className="bg-[radial-gradient(120%_90%_at_50%_0%,color-mix(in_oklab,var(--accent)_16%,transparent),transparent_70%)] px-6 pt-7 pb-1 max-md:px-5">
           <div className="mx-auto grid size-14 place-items-center rounded-[16px] bg-panel text-[27px] text-accent-hi shadow-[0_0_0_1px_var(--accent-bg-2),0_0_36px_color-mix(in_oklab,var(--accent)_28%,transparent)]">
@@ -113,7 +114,6 @@ export function TourOffer() {
         <div className="mt-5 flex gap-2 px-6 pb-3 max-md:px-5">
           <button
             type="button"
-            autoFocus
             onClick={() => answer(true)}
             className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-accent text-[13.5px] font-semibold text-on-accent transition-colors hover:bg-accent-hi"
           >
