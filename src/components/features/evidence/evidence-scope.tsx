@@ -79,6 +79,13 @@ export function EvidenceScope({
 
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const activeId = useRef<string | null>(null);
+  /**
+   * A clicked citation pins its thread: it survives the pointer leaving and scrolling,
+   * so the reader can scroll up and follow it to the source card. Hovering another
+   * citation previews that one; leaving returns to the pin. Esc, a click elsewhere or
+   * clicking the pinned citation again releases it.
+   */
+  const pinned = useRef<Element | null>(null);
 
   const clearLit = useCallback(() => {
     const root = rootRef.current;
@@ -148,12 +155,30 @@ export function EvidenceScope({
     return el && rootRef.current?.contains(el) ? el : null;
   };
 
+  /** Hover ended: fall back to the pinned citation if there is one, otherwise clear. */
+  const release = useCallback(() => {
+    const pin = pinned.current;
+    if (!pin?.isConnected) {
+      pinned.current = null;
+      clear();
+      return;
+    }
+    // already showing the pin: leave the thread (and its draw animation) alone
+    if (activeId.current === pin.getAttribute("data-chunk") && rootRef.current?.dataset.focusFrom === "badge") return;
+    activate(pin);
+  }, [activate, clear]);
+
+  const unpin = useCallback(() => {
+    pinned.current = null;
+    clear();
+  }, [clear]);
+
   const onPointerOver = (e: PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === "touch") return;
     const el = chunkAt(e.target);
     clearTimeout(timer.current);
     if (!el) {
-      if (activeId.current !== null) timer.current = setTimeout(clear, CLEAR_DELAY_MS);
+      if (activeId.current !== null) timer.current = setTimeout(release, CLEAR_DELAY_MS);
       return;
     }
     timer.current = setTimeout(() => activate(el), HOVER_INTENT_MS);
@@ -162,8 +187,32 @@ export function EvidenceScope({
   const onPointerLeave = (e: PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === "touch") return;
     clearTimeout(timer.current);
-    if (activeId.current !== null) timer.current = setTimeout(clear, CLEAR_DELAY_MS);
+    if (activeId.current !== null) timer.current = setTimeout(release, CLEAR_DELAY_MS);
   };
+
+  const onClick = (e: { target: EventTarget | null }) => {
+    const el = chunkAt(e.target);
+    if (!el || !el.closest("[data-answer-body]")) return;
+    if (pinned.current === el) {
+      unpin();
+      return;
+    }
+    pinned.current = el;
+    clearTimeout(timer.current);
+    activate(el);
+  };
+
+  // a click anywhere outside the citations (and outside the citation popover) releases the pin
+  useEffect(() => {
+    const onDown = (e: globalThis.PointerEvent) => {
+      if (!pinned.current) return;
+      const t = e.target instanceof Element ? e.target : null;
+      if (t && (chunkAt(t) || t.closest('[role="dialog"]'))) return;
+      unpin();
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [unpin]);
 
   const onFocus = (e: FocusEvent<HTMLDivElement>) => {
     const el = chunkAt(e.target);
@@ -182,7 +231,7 @@ export function EvidenceScope({
 
   const onBlur = (e: FocusEvent<HTMLDivElement>) => {
     if (!chunkAt(e.target) || chunkAt(e.relatedTarget)) return;
-    clear();
+    release();
   };
 
   /* ── roving tabindex over the answer's badges ─────── */
@@ -203,7 +252,7 @@ export function EvidenceScope({
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape") {
-      clear();
+      unpin();
       return;
     }
     const root = rootRef.current;
@@ -268,6 +317,7 @@ export function EvidenceScope({
         className={cx("relative", className)}
         onPointerOver={onPointerOver}
         onPointerLeave={onPointerLeave}
+        onClickCapture={onClick}
         onFocusCapture={onFocus}
         onBlurCapture={onBlur}
         onKeyDown={onKeyDown}
