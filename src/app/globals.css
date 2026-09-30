@@ -255,6 +255,18 @@
   to { transform: none; opacity: 1; }
 }
 
+/* iOS Safari zooms the page when a text field with a font smaller than 16px gets
+ * focus. On touch devices every text field is at least 16px, so typing never zooms
+ * (pinch-zoom stays available, unlike the maximum-scale=1 workaround). Unlayered, so
+ * it wins over the Tailwind text-size utilities without !important. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
   html, body { height: 100%; }
