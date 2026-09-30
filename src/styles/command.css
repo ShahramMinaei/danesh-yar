@@ -1,0 +1,96 @@
+/* command-palette: <dialog> palette, backdrop and live keycap styles. */
+
+/*
+ * The palette is a native modal <dialog> (top layer). It fades/lifts in via
+ * @starting-style and plays the reverse on close, keeping `display`/`overlay`
+ * alive with allow-discrete; browsers without that support just snap.
+ */
+.cmdk {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.985);
+  transition:
+    opacity 0.14s ease-out,
+    transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1),
+    overlay 0.16s allow-discrete,
+    display 0.16s allow-discrete;
+}
+.cmdk[open] {
+  opacity: 1;
+  transform: none;
+}
+/* still painted while it fades out, but no longer interactive */
+.cmdk:not([open]) {
+  pointer-events: none;
+}
+@starting-style {
+  .cmdk[open] {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+}
+
+/* mobile: a sheet that drops from the top edge */
+@media (max-width: 767.98px) {
+  .cmdk {
+    transform: translateY(-16px);
+  }
+  @starting-style {
+    .cmdk[open] {
+      transform: translateY(-16px);
+    }
+  }
+}
+
+/* var() fallback, not a second declaration: ::backdrop may not inherit custom properties (older Firefox) */
+.cmdk::backdrop {
+  background: var(--backdrop, rgba(10, 10, 20, 0.5));
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition:
+    opacity 0.16s ease-out,
+    overlay 0.16s allow-discrete,
+    display 0.16s allow-discrete;
+}
+.cmdk[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .cmdk[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* highlighted match inside a row label (no padding, so Persian letters keep joining) */
+.cmdk mark {
+  color: inherit;
+}
+
+/* key caps press down briefly when held (shortcuts sheet) */
+.kbd {
+  transition:
+    background-color 0.12s ease-out,
+    color 0.12s ease-out,
+    box-shadow 0.12s ease-out,
+    transform 0.12s ease-out;
+}
+
+.shortcut-row {
+  transition: background-color 0.12s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmdk,
+  .cmdk::backdrop {
+    transform: none;
+    transition: none;
+  }
+  @starting-style {
+    .cmdk[open] {
+      transform: none;
+    }
+  }
+  .kbd[data-pressed] {
+    transform: none;
+  }
+}

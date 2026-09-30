@@ -1,0 +1,77 @@
+/* welcome-tour: cursor spotlight on sample cards, staggered hero rise and card -> composer morph. */
+
+/* registered so the glow and the border ring can fade instead of snapping */
+@property --spot {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* ── Cursor spotlight (lib/spotlight.ts writes --mx/--my/--spot) ──
+ * Fine pointers only; touch keeps the plain panel. */
+@media (hover: hover) and (pointer: fine) {
+  .spot {
+    --spot-tint: 9%;
+    background:
+      radial-gradient(
+        260px circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--accent) calc(var(--spot) * var(--spot-tint)), transparent),
+        transparent 65%
+      ),
+      var(--panel);
+    transition: --spot 220ms ease-out, box-shadow 150ms ease;
+  }
+  [data-theme="light"] .spot { --spot-tint: 6%; }
+
+  /* 1px accent ring that only lights up near the cursor */
+  .spot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%), var(--accent), transparent 70%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    opacity: var(--spot);
+    pointer-events: none;
+  }
+}
+
+/* ── Hero entrance: each piece rises in; delays are set inline ── */
+.wl-rise { animation: wl-rise 520ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+@keyframes wl-rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* ── Card -> composer morph (shared-element View Transition "dy-q") ──
+ * The root snapshot stays static (theme.css sets it to animation:none), so
+ * only the picked card flies. The group is a clipped, rounded panel so the
+ * card and the composer cross-fade inside one shape while it resizes. */
+::view-transition-group(dy-q) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  border-radius: 12px;
+  overflow: clip;
+  background: var(--panel);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent), 0 12px 32px var(--shadow-color);
+}
+::view-transition-old(dy-q),
+::view-transition-new(dy-q) {
+  block-size: 100%;
+  object-fit: cover;
+  object-position: top right;
+}
+::view-transition-old(dy-q) { animation: wl-vt-out 150ms ease-out both; }
+::view-transition-new(dy-q) { animation: wl-vt-in 260ms ease-out 80ms both; }
+@keyframes wl-vt-out {
+  to { opacity: 0; }
+}
+@keyframes wl-vt-in {
+  from { opacity: 0; }
+}

@@ -1,0 +1,65 @@
+/* theme-studio: circular View Transition theme reveal, theme gallery and feedback form. */
+
+/* ── Circular theme reveal ─────────────────────────────
+ * The clip-path circle is driven from JS (lib/view-transition.ts); the default
+ * cross-fade is disabled so only the circle moves. In reverse the old (light)
+ * snapshot sits on top and collapses into the switch. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* the incoming snapshot starts fully clipped at the origin (see lib/view-transition.ts) */
+html[data-vt="reveal"]::view-transition-new(root) { clip-path: circle(0px at var(--vt-x, 50%) var(--vt-y, 50%)); }
+html[data-vt="reverse"]::view-transition-old(root) { z-index: 2; }
+html[data-vt="reverse"]::view-transition-new(root) { z-index: 1; }
+/* snapshot the final state: no colour/transform tweens fighting the reveal */
+html[data-vt] *,
+html[data-vt] *::before,
+html[data-vt] *::after { transition: none !important; }
+
+/* one-shot accent ring on the switch knob after a switch */
+.ts-knob-flash {
+  position: absolute;
+  inset: -1px;
+  border-radius: 999px;
+  pointer-events: none;
+  animation: ts-knob-flash 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes ts-knob-flash {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  to { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+
+/* ── Theme gallery ─────────────────────────────────── */
+.ts-chip { transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease; }
+@media (hover: hover) {
+  .ts-swatch:hover .ts-chip { transform: translateY(-1px); }
+}
+.ts-check { animation: ts-pop 0.22s cubic-bezier(0.2, 0.8, 0.2, 1.4) both; }
+@keyframes ts-pop {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ── Feedback form ─────────────────────────────────── */
+.fb-star { transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.15s ease; }
+@media (hover: hover) {
+  .fb-star:hover { transform: scale(1.12); }
+}
+
+/* success mark: circle draws first, the check follows */
+.fb-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: fb-draw 0.42s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.fb-draw-check { animation-duration: 0.26s; animation-delay: 0.34s; }
+@keyframes fb-draw {
+  to { stroke-dashoffset: 0; }
+}
+.fb-rise { animation: fb-rise 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) 0.18s both; }
+@keyframes fb-rise {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}

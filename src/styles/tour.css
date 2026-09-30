@@ -1,0 +1,40 @@
+/* welcome-tour: guided spotlight tour (hole + coach card). */
+
+/* The hole is a transparent box at the target; its huge spread shadow dims
+ * everything else. Shadows paint first-on-top, so the ring and glow sit above
+ * the dim layer. Visual only: hit-testing is handled by .tour-blocker. */
+/* the modal backdrop is deliberately soft in light; the tour needs a firmer dim so the hole reads */
+:root { --tour-dim: var(--backdrop); }
+[data-theme="light"] { --tour-dim: color-mix(in oklab, var(--fg) 44%, transparent); }
+
+.tour-hole {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 0 28px 2px color-mix(in oklab, var(--accent) 34%, transparent),
+    0 0 0 9999px var(--tour-dim);
+}
+.tour-dim { background: var(--tour-dim); }
+
+/* hover tooltips live below the tour layer and would peek through the dim */
+html[data-tour-active] [role="tooltip"] { visibility: hidden; }
+/* glide between steps only; scroll and resize updates follow the target instantly */
+.tour-hole[data-glide] {
+  transition:
+    transform 380ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 380ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-hole[data-glide] { transition: none; }
+}
+
+.tour-in { animation: tour-fade 220ms ease-out both; }
+.tour-out { animation: tour-fade 180ms ease-in reverse both; }
+@keyframes tour-fade {
+  from { opacity: 0; }
+}

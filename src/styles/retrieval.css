@@ -1,0 +1,132 @@
+/* retrieval-motion: living pipeline connectors, drawn step icons and ghost source deck. */
+
+/* ── Connector packet ─────────────────────────────────
+   A short accent comet travelling from the finished step toward the running
+   one. The wrapper spans the whole connector (so translate % = its width) and
+   the comet starts just past the inline-start edge; transform + opacity only,
+   so it stays on the compositor. RTL moves leftward, LTR rightward. */
+.rm-packet {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+}
+.rm-packet::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -28px;
+  width: 28px;
+  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 75%, transparent) 70%, var(--accent-hi));
+}
+[dir="rtl"] .rm-packet::before {
+  background: linear-gradient(to left, transparent, color-mix(in oklab, var(--accent) 75%, transparent) 70%, var(--accent-hi));
+}
+
+/* ── Step glyphs ──────────────────────────────────────
+   Paths use pathLength=1, so a dash of 1 is the whole stroke. */
+.rm-draw {
+  stroke-dasharray: 1;
+  animation: rm-draw 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.rm-draw-2 { animation-delay: 120ms; }
+.rm-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1.5px currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Ghost source deck ────────────────────────────────── */
+.rm-ghost {
+  outline: 1px dashed color-mix(in oklab, var(--fg) 18%, transparent);
+  outline-offset: -1px;
+  transition: outline-color 240ms ease-out;
+}
+.rm-ghost[data-found] {
+  outline-style: solid;
+  outline-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+.rm-skel {
+  background-color: color-mix(in oklab, var(--fg) 6%, transparent);
+  transition: background-color 240ms ease-out;
+}
+.rm-ghost[data-found] .rm-skel {
+  background-color: color-mix(in oklab, var(--fg) 10%, transparent);
+}
+
+@keyframes rm-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes rm-ping {
+  from { transform: scale(1); opacity: 0.5; }
+  to { transform: scale(1.9); opacity: 0; }
+}
+@keyframes rm-shake {
+  0%, 100% { transform: none; }
+  16%, 50%, 83% { transform: translateX(-2px); }
+  33%, 66% { transform: translateX(2px); }
+}
+@keyframes rm-tick {
+  from { transform: scaleY(0.4); }
+  to { transform: none; }
+}
+@keyframes rm-dot {
+  from { transform: scale(0.2); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+/* the travel distance is the connector width plus the comet's own 28px */
+@keyframes rm-packet-rtl {
+  0% { transform: translateX(0); opacity: 0; }
+  18%, 82% { opacity: 1; }
+  100% { transform: translateX(calc(-100% - 28px)); opacity: 0; }
+}
+@keyframes rm-packet-ltr {
+  0% { transform: translateX(0); opacity: 0; }
+  18%, 82% { opacity: 1; }
+  100% { transform: translateX(calc(100% + 28px)); opacity: 0; }
+}
+/* highlight band flows toward the inline end (leftward in RTL) */
+@keyframes rm-flow-rtl {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@keyframes rm-flow-ltr {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Decorative motion only when the viewer hasn't asked for less. Under reduced
+   motion everything above still lands on its final, static state. */
+@media (prefers-reduced-motion: no-preference) {
+  .rm-packet {
+    display: block;
+    animation: rm-packet-ltr 1.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+  [dir="rtl"] .rm-packet { animation-name: rm-packet-rtl; }
+
+  .rm-ping { animation: rm-ping 600ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .rm-shake { animation: rm-shake 360ms ease-in-out; }
+  .rm-tick { animation: rm-tick 220ms cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: 50% 100%; }
+  .rm-dot { animation: rm-dot 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  .rm-shimmer {
+    background-image: linear-gradient(90deg, transparent 30%, color-mix(in oklab, var(--accent-hi) 85%, transparent) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: rm-flow-ltr 1.4s linear infinite;
+  }
+  [dir="rtl"] .rm-shimmer { animation-name: rm-flow-rtl; }
+
+  /* a single light sweep across a cell's skeleton the moment its chunk lands */
+  .rm-ghost[data-found] .rm-skel {
+    background-image: linear-gradient(90deg, transparent 30%, color-mix(in oklab, var(--accent) 28%, transparent) 50%, transparent 70%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position: 200% 0;
+    animation: rm-flow-ltr 900ms ease-out 1 both;
+  }
+  [dir="rtl"] .rm-ghost[data-found] .rm-skel { animation-name: rm-flow-rtl; background-position: -200% 0; }
+}

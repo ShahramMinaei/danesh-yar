@@ -1,0 +1,98 @@
+/* ink-stream: word-boundary streaming reveal, citation landing and block choreography.
+ * Every animation is one-shot (except the caret) and fills `backwards` only, so no
+ * filter/transform lingers on the hundreds of word spans once they have settled.
+ * `--ink-d` is a per-item stagger set inline on list items / table rows and
+ * inherited by the `.ink-*` nodes inside them. */
+
+.ink-word {
+  animation: ink-in 380ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  animation-delay: var(--ink-d, 0ms);
+}
+@keyframes ink-in {
+  from { opacity: 0; filter: blur(3px); transform: translateY(1px); }
+}
+
+.ink-rise {
+  animation: ink-rise 420ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: var(--ink-d, 0ms);
+}
+@keyframes ink-rise {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+.ink-fade {
+  animation: ink-fade 320ms ease-out backwards;
+}
+@keyframes ink-fade {
+  from { opacity: 0; }
+}
+
+/* callouts arrive from the inline-start edge (right in RTL) */
+.ink-slide {
+  --ink-slide-x: 12px;
+  animation: ink-slide 440ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+:where([dir="ltr"]) .ink-slide { --ink-slide-x: -12px; }
+@keyframes ink-slide {
+  from { opacity: 0; transform: translateX(var(--ink-slide-x)); }
+}
+
+/* a citation "lands": springs into place and sends out one soft ring.
+ * The badge's own Tailwind ring (also a box-shadow) is kept in every frame. */
+.ink-cite-land {
+  --ink-halo: var(--accent);
+  animation: ink-cite-land 520ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  animation-delay: calc(var(--ink-d, 0ms) + 60ms);
+}
+@keyframes ink-cite-land {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+    box-shadow: var(--tw-ring-shadow, 0 0 #0000), 0 0 0 0 color-mix(in oklab, var(--ink-halo) 45%, transparent);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--tw-ring-shadow, 0 0 #0000), 0 0 0 6px transparent;
+  }
+}
+
+.ink-caret {
+  animation: ink-caret 1s ease-in-out infinite alternate;
+}
+@keyframes ink-caret {
+  from { opacity: 1; }
+  to { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* one light pass across a formula as it appears; background-position (not a
+   * transform) so it stays inside the box without clipping its horizontal scroll */
+  .ink-sweep { position: relative; }
+  .ink-sweep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 22%, transparent), transparent) no-repeat;
+    background-size: 50% 100%;
+    background-position: -100% 0;
+    /* soft top/bottom so it reads as a glint, not a highlighted box */
+    mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+    animation: ink-sweep 900ms cubic-bezier(0.4, 0, 0.2, 1) 200ms 1;
+  }
+  @keyframes ink-sweep {
+    from { background-position: -100% 0; }
+    to { background-position: 200% 0; }
+  }
+
+  /* the callout icon gives two small shakes once the box has slid in */
+  .ink-nudge { animation: ink-nudge 240ms ease-in-out 380ms 2; }
+  @keyframes ink-nudge {
+    25% { transform: translateX(2px); }
+    75% { transform: translateX(-2px); }
+  }
+}

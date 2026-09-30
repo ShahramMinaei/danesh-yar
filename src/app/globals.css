@@ -1,0 +1,306 @@
+@import "tailwindcss";
+@import "../styles/ink.css";
+@import "../styles/theme.css";
+@import "../styles/retrieval.css";
+@import "../styles/evidence.css";
+@import "../styles/command.css";
+@import "../styles/stream.css";
+@import "../styles/welcome.css";
+@import "../styles/tour.css";
+@import "../styles/grounding.css";
+
+/*
+ * Danesh-Yar design tokens (Nocturne).
+ * Every theme defines the same raw variables; Tailwind maps them to utilities
+ * via `@theme inline`, so `bg-panel`, `text-fg/45`, `ring-accent/40` etc. follow
+ * the active theme. Accent is used as line/edge/halo only — never large fills.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --app: #10111c;
+  --sunken: #0c0d16;
+  --panel: #151623;
+  --surface: #1c1e2a;
+  --elevated: #242633;
+  --chip: #23252c;
+  --line: #383b47;
+  --line-strong: #525666;
+  --line-modal: #9397ab;
+  --fg: #e9e9ed;
+  --fg-2: #9397ab;
+  --idle: #75798c;
+  --accent: #9184d9;
+  --accent-hi: #b5abfc;
+  --accent-fg: #d2cefd;
+  --accent-fg-2: #e7e5fe;
+  --accent-bg: #262239;
+  --accent-bg-2: #423a6a;
+  --accent-line: #5d5294;
+  --on-accent: #10111c;
+  --success: #57b894;
+  --warning: #d9a441;
+  --error: #dd7268;
+  --error-fg: #e9c4c0;
+  --info: #7fa8d9;
+  --shadow-color: rgba(0, 0, 0, 0.6);
+  --shadow-color-lg: rgba(0, 0, 0, 0.7);
+  --backdrop: rgba(16, 17, 28, 0.74);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  /* near-neutral greys with only a hint of violet; the canvas sits a step below white panels and cards */
+  --app: #f6f6f9;
+  --sunken: #efeff4;
+  --panel: #ffffff;
+  --surface: #ffffff;
+  --elevated: #f4f3f9;
+  --chip: #ecebf3;
+  --line: #e2e1ea;
+  --line-strong: #cbcad6;
+  --line-modal: #a3a2b3;
+  --fg: #191823;
+  --fg-2: #5d5b6d;
+  --idle: #9896a9;
+  /* crisper, more saturated violet so accents read clearly on white */
+  --accent: #6b5bd2;
+  --accent-hi: #5a48c4;
+  --accent-fg: #4b3bab;
+  --accent-fg-2: #37298c;
+  --accent-bg: #f1efff;
+  --accent-bg-2: #dfdaff;
+  --accent-line: #bdb4f6;
+  --on-accent: #ffffff;
+  --success: #1e8a5e;
+  --warning: #b07310;
+  --error: #cf4a40;
+  --error-fg: #a3352c;
+  --info: #3b72b9;
+  --shadow-color: rgba(30, 27, 52, 0.09);
+  --shadow-color-lg: rgba(30, 27, 52, 0.18);
+  --backdrop: rgba(25, 24, 35, 0.3);
+}
+
+[data-theme="emerald"] {
+  color-scheme: dark;
+  --app: #111c1a;
+  --sunken: #0c1513;
+  --panel: #152320;
+  --surface: #1b2a26;
+  --elevated: #22332e;
+  --chip: #243430;
+  --line: #34483f;
+  --line-strong: #4a6158;
+  --line-modal: #7d948a;
+  --fg: #e6efec;
+  --fg-2: #8fa39b;
+  --idle: #6b8078;
+  --accent: #57b894;
+  --accent-hi: #7fd0b0;
+  --accent-fg: #bfe6d6;
+  --accent-fg-2: #dcf3ea;
+  --accent-bg: #173a30;
+  --accent-bg-2: #235244;
+  --accent-line: #2f6b58;
+  --on-accent: #111c1a;
+  --success: #6cc7a0;
+  --warning: #d9a441;
+  --error: #dd7268;
+  --error-fg: #e9c4c0;
+  --info: #7fa8d9;
+  --shadow-color: rgba(0, 0, 0, 0.55);
+  --shadow-color-lg: rgba(0, 0, 0, 0.65);
+  --backdrop: rgba(17, 28, 26, 0.74);
+}
+
+[data-theme="cyber"] {
+  color-scheme: dark;
+  --app: #0d1020;
+  --sunken: #090b17;
+  --panel: #11152a;
+  --surface: #141a33;
+  --elevated: #1a2140;
+  --chip: #1c2340;
+  --line: #2a3358;
+  --line-strong: #3d4775;
+  --line-modal: #7f8ab5;
+  --fg: #e6ecfa;
+  --fg-2: #8f9ac2;
+  --idle: #6d77a0;
+  --accent: #7fa8d9;
+  --accent-hi: #a9c8ef;
+  --accent-fg: #cfe0f7;
+  --accent-fg-2: #e3eefc;
+  --accent-bg: #16254a;
+  --accent-bg-2: #213766;
+  --accent-line: #34548a;
+  --on-accent: #0d1020;
+  --success: #4fd1a5;
+  --warning: #e0b04a;
+  --error: #ef6f7a;
+  --error-fg: #f4c3c7;
+  --info: #b69cf0;
+  --shadow-color: rgba(0, 0, 0, 0.6);
+  --shadow-color-lg: rgba(0, 0, 0, 0.7);
+  --backdrop: rgba(13, 16, 32, 0.74);
+}
+
+@theme inline {
+  --color-app: var(--app);
+  --color-sunken: var(--sunken);
+  --color-panel: var(--panel);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-chip: var(--chip);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-line-modal: var(--line-modal);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-idle: var(--idle);
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-fg-2: var(--accent-fg-2);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-bg-2: var(--accent-bg-2);
+  --color-accent-line: var(--accent-line);
+  --color-on-accent: var(--on-accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-error-fg: var(--error-fg);
+  --color-info: var(--info);
+
+  --font-sans: "Vazirmatn", "Inter", system-ui, sans-serif;
+  --font-latin: "Inter", "Vazirmatn", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Elevation: sm = hairline, md = popover, lg = modal */
+  --shadow-hair: 0 0 0 1px var(--line);
+  --shadow-pop: 0 0 0 1px var(--line-strong), 0 6px 18px var(--shadow-color);
+  --shadow-modal: 0 0 0 1px var(--line-modal), 0 16px 40px var(--shadow-color-lg);
+
+  --animate-blink: blink 1.1s steps(1) infinite;
+  --animate-pulse-dot: pulse-dot 1.2s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-in: fade-in 0.16s ease-out;
+  --animate-sheet-up: sheet-up 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-drawer-in: drawer-in 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-drawer-out: drawer-out 0.3s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  --animate-fade-out: fade-out 0.3s ease-in forwards;
+  --animate-pop-in: pop-in 0.14s ease-out;
+  --animate-spark: spark 1.3s ease-in infinite;
+  --animate-aura: aura 1.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  --animate-burst: burst 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.35); }
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+/* side panels slide in from / out to the start edge (right in RTL) */
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes drawer-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+/* spark races from the track start (right) to the knob */
+@keyframes spark {
+  0% { right: 0%; opacity: 0; transform: scale(0.5); }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { right: 100%; opacity: 0; transform: scale(1.3); }
+}
+@keyframes aura {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(2.2); opacity: 0; }
+}
+@keyframes burst {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(4); opacity: 0; }
+}
+@keyframes pop-in {
+  from { transform: translateY(-4px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--app);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  button { font: inherit; color: inherit; }
+  button:not(:disabled) { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  textarea, input { font: inherit; color: inherit; }
+  kbd { font-family: var(--font-latin); }
+
+  /* thin 4px scrollbar; standard props only where ::-webkit-scrollbar is unsupported (Chrome ignores the pseudo-elements when they're set) */
+  @supports not selector(::-webkit-scrollbar) {
+    * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--fg) 14%, transparent) transparent; }
+  }
+  *::-webkit-scrollbar { width: 4px; height: 4px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--fg) 14%, transparent); border-radius: 999px; }
+  *::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--accent) 50%, transparent); }
+  *::-webkit-scrollbar-button { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; animation-delay: 0s !important; transition-delay: 0s !important; }
+  }
+}
+
+@utility kicker {
+  font-family: var(--font-latin);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--fg) 40%, transparent);
+}
+
+@utility ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
