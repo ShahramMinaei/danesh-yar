@@ -300,12 +300,14 @@ function OverflowButton() {
  */
 const TRACK_H = 36;
 /** spark particles for deep mode: vertical position, travel time, stagger */
+// negative delays: on open each spark is already mid-flight at a different point, so they
+// never bunch up (or sit visibly waiting) at the start of the track
 const SPARKS = [
-  { top: "22%", dur: "1.3s", delay: "0s" },
-  { top: "62%", dur: "1.6s", delay: "0.35s" },
-  { top: "40%", dur: "1.1s", delay: "0.7s" },
-  { top: "74%", dur: "1.45s", delay: "1s" },
-  { top: "30%", dur: "1.25s", delay: "1.25s" },
+  { top: "22%", dur: "1.3s", delay: "-0.2s" },
+  { top: "62%", dur: "1.6s", delay: "-0.75s" },
+  { top: "40%", dur: "1.1s", delay: "-0.45s" },
+  { top: "74%", dur: "1.45s", delay: "-1.1s" },
+  { top: "30%", dur: "1.25s", delay: "-0.95s" },
 ];
 
 function DepthSlider() {
@@ -390,7 +392,7 @@ function DepthSlider() {
                 <span
                   key={i}
                   style={{ top: p.top, animationDuration: p.dur, animationDelay: p.delay }}
-                  className="absolute size-[3px] animate-spark rounded-full bg-white shadow-[0_0_6px_2px_rgba(255,255,255,0.7)]"
+                  className="absolute size-[3px] animate-spark rounded-full bg-white opacity-0 shadow-[0_0_6px_2px_rgba(255,255,255,0.7)]"
                 />
               ))}
             </span>
