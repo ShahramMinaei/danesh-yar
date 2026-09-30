@@ -335,21 +335,24 @@ export const Composer = forwardRef<ComposerHandle, { bp: Breakpoint }>(function 
                   : "ring-fg/12 hover:ring-fg/22",
           )}
         >
-          <button
-            type="button"
-            onClick={toggleVoice}
-            disabled={isStreaming}
-            aria-label={listening ? "توقف ورودی صوتی" : "ورودی صوتی"}
-            aria-pressed={listening}
-            style={{ width: mic, height: mic, marginBottom: (lineH - mic) / 2 }}
-            className={cx(
-              "grid shrink-0 place-items-center rounded-[9px] border text-[17px] transition-colors disabled:opacity-40",
-              listening ? "animate-pulse border-accent bg-accent/12 text-accent-hi" : "border-transparent text-fg/55 hover:bg-fg/7 hover:text-fg",
-            )}
-          >
-            <Microphone weight={listening ? "fill" : "regular"} />
-          </button>
-          <AttachMenu size={mic} marginBottom={(lineH - mic) / 2} disabled={files.length >= MAX_FILES} onPick={openPicker} />
+          {/* mic and attach sit together (no gap), so the + stays next to the mic, not out in the field */}
+          <div className="flex shrink-0 items-end">
+            <button
+              type="button"
+              onClick={toggleVoice}
+              disabled={isStreaming}
+              aria-label={listening ? "توقف ورودی صوتی" : "ورودی صوتی"}
+              aria-pressed={listening}
+              style={{ width: mic, height: mic, marginBottom: (lineH - mic) / 2 }}
+              className={cx(
+                "grid shrink-0 place-items-center rounded-[9px] border text-[17px] transition-colors disabled:opacity-40",
+                listening ? "animate-pulse border-accent bg-accent/12 text-accent-hi" : "border-transparent text-fg/55 hover:bg-fg/7 hover:text-fg",
+              )}
+            >
+              <Microphone weight={listening ? "fill" : "regular"} />
+            </button>
+            <AttachMenu size={mic} marginBottom={(lineH - mic) / 2} disabled={files.length >= MAX_FILES} onPick={openPicker} />
+          </div>
           <input
             ref={picker}
             type="file"

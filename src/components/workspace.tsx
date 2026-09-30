@@ -58,9 +58,10 @@ export function Workspace() {
   }, [bp, set, state.drawerOpen]);
 
   // keep the conversation pinned to the bottom while streaming, unless the user scrolled up
+  // (never on the empty welcome screen: that must open from its top)
   useEffect(() => {
     const el = scroller.current;
-    if (el && stick.current) el.scrollTop = el.scrollHeight;
+    if (el && stick.current && state.messages.length > 0) el.scrollTop = el.scrollHeight;
   }, [state.messages]);
 
   const lastLen = useRef(0);

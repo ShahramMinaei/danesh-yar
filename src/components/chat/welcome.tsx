@@ -73,34 +73,36 @@ export function Welcome({ bp, onPick }: { bp: Breakpoint; onPick: (q: string) =>
     <div
       className={cx(
         "flex min-h-full flex-col items-center justify-center bg-[radial-gradient(120%_80%_at_50%_0%,color-mix(in_oklab,var(--accent)_7%,transparent),transparent_60%)]",
-        mobile ? "px-4 py-8" : bp === "tablet" ? "px-8 py-10" : "px-16 py-10",
+        // mobile is tight so the hero and all three suggestions fit a phone screen without scrolling
+        mobile ? "px-4 pt-5 pb-4" : bp === "tablet" ? "px-8 py-10" : "px-16 py-10",
       )}
     >
       <div
         style={rise(0)}
         className={cx(
           "wl-rise grid place-items-center rounded-[16px] bg-panel text-accent-hi shadow-[0_0_0_1px_var(--accent-bg-2),0_0_40px_color-mix(in_oklab,var(--accent)_18%,transparent)]",
-          mobile ? "size-12 text-[23px]" : "size-14 text-[27px]",
+          mobile ? "size-11 text-[21px]" : "size-14 text-[27px]",
         )}
       >
         <Brain />
       </div>
-      <h1 style={rise(60)} className={cx("wl-rise mt-5 mb-2 text-center leading-[1.2] font-medium", mobile ? "text-[22px]" : "text-[30px]")}>
+      <h1 style={rise(60)} className={cx("wl-rise mb-2 text-center leading-[1.2] font-medium", mobile ? "mt-3.5 text-[20px]" : "mt-5 text-[30px]")}>
         پاسخ دقیق، مستند به منبع
       </h1>
       <p
         style={rise(120)}
-        className={cx("wl-rise m-0 max-w-[560px] text-center leading-[1.85] text-pretty text-fg/55", mobile ? "text-[13px]" : "text-[14px]")}
+        className={cx("wl-rise m-0 max-w-[560px] text-center text-pretty text-fg/55", mobile ? "text-[13px] leading-[1.75]" : "text-[14px] leading-[1.85]")}
       >
-        سؤال خود را به فارسی بپرسید. پاسخ‌ها تنها بر پایه اسناد، آیین‌نامه‌ها و بندهای موجود در پایگاه دانش ساخته می‌شوند و هر ادعا به بند
-        مرجع خود ارجاع می‌یابد.
+        {mobile
+          ? "پاسخ‌ها فقط بر پایه‌ی اسناد و آیین‌نامه‌ها ساخته می‌شوند و هر ادعا به بند مرجعش ارجاع دارد."
+          : "سؤال خود را به فارسی بپرسید. پاسخ‌ها تنها بر پایه اسناد، آیین‌نامه‌ها و بندهای موجود در پایگاه دانش ساخته می‌شوند و هر ادعا به بند مرجع خود ارجاع می‌یابد."}
       </p>
       <div
         ref={spot.ref}
         onPointerMove={spot.onPointerMove}
         onPointerLeave={spot.onPointerLeave}
         data-tour="samples"
-        className={cx("mt-8 grid w-full max-w-[820px] gap-3", mobile ? "grid-cols-1 gap-2" : "grid-cols-3")}
+        className={cx("grid w-full max-w-[820px] gap-3", mobile ? "mt-5 grid-cols-1 gap-2" : "mt-8 grid-cols-3")}
       >
         {FEATURES.map((f, i) => (
           <button
@@ -110,13 +112,13 @@ export function Welcome({ bp, onPick }: { bp: Breakpoint; onPick: (q: string) =>
             onClick={(e) => pick(SAMPLE_QUESTIONS[i], e.currentTarget)}
             className={cx(
               "spot wl-rise relative flex rounded-[12px] bg-panel text-start ring-1 ring-inset ring-fg/8 transition-shadow hover:ring-fg/14",
-              mobile ? "items-start gap-3 p-3.5" : "flex-col gap-[9px] p-4",
+              mobile ? "items-start gap-3 px-3.5 py-3" : "flex-col gap-[9px] p-4",
             )}
           >
             <f.icon className="shrink-0 text-[19px] text-accent-hi" />
             <span className="flex flex-col gap-[9px] max-md:gap-1">
               <span className="text-[14px] font-semibold max-md:text-[13px]">{f.title}</span>
-              <span className="text-[12px] leading-[1.75] text-fg/50">{f.text}</span>
+              <span className="text-[12px] leading-[1.75] text-fg/50 max-md:leading-[1.65]">{f.text}</span>
             </span>
           </button>
         ))}
