@@ -568,15 +568,12 @@ export function TopNav({ variant, onToggleSidebar }: { variant: "desktop" | "tab
 
   return (
     <header className="flex h-[60px] shrink-0 items-center gap-2.5 border-b border-fg/9 bg-app px-[18px]">
-      <IconButton
-        label={state.sidebarExpanded ? "جمع‌کردن سایدبار" : "باز کردن سایدبار"}
-        size={32}
-        tone="bare"
-        onClick={onToggleSidebar}
-        className="text-[16px] text-fg/65"
-      >
-        <SidebarSimple />
-      </IconButton>
+      {/* while the sidebar is open its own header carries the collapse button (next to search) */}
+      {!state.sidebarExpanded && (
+        <IconButton label="باز کردن سایدبار" size={32} tone="bare" onClick={onToggleSidebar} className="text-[16px] text-fg/65">
+          <SidebarSimple />
+        </IconButton>
+      )}
       <FilterBadge />
       <div className="flex-1" />
       <ThemeToggle />

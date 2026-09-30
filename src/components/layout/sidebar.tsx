@@ -14,6 +14,7 @@ import {
   Plus,
   Question,
   TerminalWindow,
+  CaretDoubleRight,
   X,
 } from "@phosphor-icons/react";
 import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
@@ -303,6 +304,12 @@ export function SidebarPanel({ variant, onClose }: { variant: "docked" | "overla
           <div className={cx("truncate text-fg/45", drawer ? "text-[10.5px]" : "text-[11px]")}>دستیار اسناد و مقررات فنی</div>
         </div>
         <PaletteTrigger />
+        {variant === "docked" && (
+          // «»» toward the start edge: tucks the (RTL, right-hand) sidebar away; the navbar's open button uses the panel icon
+          <IconButton label="جمع‌کردن سایدبار" size={32} tone="bare" onClick={onClose} className="text-[16px] text-fg/60">
+            <CaretDoubleRight />
+          </IconButton>
+        )}
         {drawer && (
           <IconButton label="بستن" size={32} onClick={onClose} className="text-[14px] text-fg/70">
             <X />
