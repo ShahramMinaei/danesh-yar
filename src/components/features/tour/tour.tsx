@@ -247,10 +247,11 @@ function TourRun({ closing }: { closing: boolean }) {
     // step: a remounted card (a dropped step) must be placed even when the box didn't move
   }, [box, i, step]);
 
-  // focus follows the card so Enter/Space/arrows work straight away
+  // focus follows the card (not its «بعدی» button, which would draw a focus ring every step);
+  // Enter on the card advances and the arrows walk the steps, Tab reaches the buttons
   const shown = steps !== null && (n === 0 || box !== null);
   useEffect(() => {
-    if (shown && !closing) nextRef.current?.focus({ preventScroll: true });
+    if (shown && !closing) (cardRef.current ?? nextRef.current)?.focus({ preventScroll: true });
   }, [shown, step, closing]);
 
   // hand focus back to where the user was
@@ -283,6 +284,12 @@ function TourRun({ closing }: { closing: boolean }) {
         stopTour();
         return;
       }
+      // Enter on the card itself (initial focus) acts like «بعدی» / «پایان»
+      if (e.key === "Enter" && e.target === cardRef.current) {
+        e.preventDefault();
+        next();
+        return;
+      }
       if ((e.key !== "ArrowLeft" && e.key !== "ArrowRight") || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
       const t = e.target as Node | null;
       if (!(t === document.body || (t && cardRef.current?.contains(t)))) return;
@@ -294,12 +301,12 @@ function TourRun({ closing }: { closing: boolean }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [closing, last, go, i]);
+  }, [closing, last, go, i, next]);
 
   if (!steps) return null;
 
   const layer = cx("fixed inset-0 z-[60]", closing ? "tour-out pointer-events-none" : "tour-in pointer-events-none");
-  const card = "pointer-events-auto absolute w-[300px] max-w-[calc(100vw-24px)] animate-pop-in rounded-[12px] bg-surface p-4 shadow-modal";
+  const card = "pointer-events-auto absolute w-[300px] max-w-[calc(100vw-24px)] animate-pop-in rounded-[12px] bg-surface p-4 shadow-modal outline-none";
 
   // no anchor at this size: a single centred note
   if (n === 0) {
@@ -354,6 +361,7 @@ function TourRun({ closing }: { closing: boolean }) {
       <div
         key={step.id}
         ref={cardRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="false"
         aria-labelledby={titleId}
