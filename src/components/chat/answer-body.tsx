@@ -88,7 +88,8 @@ function RowCite({ chunkId, label, siblings }: { chunkId: string; label: string;
       aria-expanded={isOpen}
       aria-label={`منبع: ${label}`}
       className={cx(
-        "cursor-pointer rounded-[3px] text-start underline decoration-dotted underline-offset-4 transition-colors hover:text-accent-fg hover:decoration-accent/50",
+        // padding gives the lit highlight room around the text; the negative margin keeps the cell text aligned
+        "-mx-1.5 -my-0.5 cursor-pointer rounded-[6px] px-1.5 py-0.5 text-start underline decoration-dotted underline-offset-4 transition-colors hover:text-accent-fg hover:decoration-accent/50",
         isOpen ? "text-accent-fg decoration-accent/50" : "text-fg/60 decoration-fg/30",
       )}
     >
