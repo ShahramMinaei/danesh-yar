@@ -3,6 +3,15 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 /**
+ * Static hosting build (GitHub Pages): STATIC_EXPORT=1 emits plain HTML/CSS/JS to
+ * `out/`, served under PAGES_BASE_PATH (e.g. "/danesh-yar"). Static hosts can't send
+ * response headers, and `headers()` is unsupported with `output: "export"`, so the
+ * security headers below apply only when the app runs on a Next.js server.
+ */
+const staticExport = process.env.STATIC_EXPORT === "1";
+const basePath = staticExport ? process.env.PAGES_BASE_PATH || "" : "";
+
+/**
  * Content-Security-Policy without nonces (the page is statically rendered).
  * Only same-origin scripts/styles/fonts load; images also allow blob: (attachment
  * previews) and data:. No plugins, no framing (clickjacking), no foreign form
@@ -40,9 +49,13 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@phosphor-icons/react"],
   },
-  async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
-  },
+  ...(staticExport
+    ? { output: "export" as const, basePath, trailingSlash: true }
+    : {
+        async headers() {
+          return [{ source: "/(.*)", headers: securityHeaders }];
+        },
+      }),
 };
 
 export default nextConfig;
