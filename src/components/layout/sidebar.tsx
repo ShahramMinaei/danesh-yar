@@ -14,7 +14,7 @@ import {
   Plus,
   Question,
   TerminalWindow,
-  CaretDoubleRight,
+  SidebarSimple,
   X,
 } from "@phosphor-icons/react";
 import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from "react";
@@ -297,24 +297,25 @@ export function SidebarPanel({ variant, onClose }: { variant: "docked" | "overla
     >
       {/* brand */}
       {/* 59px = the top nav's content height (60 − its 1px border), so both rows share one centre line */}
-      <div className={cx("flex shrink-0 items-center gap-2.5 px-3.5", drawer ? "py-3" : "h-[59px]")}>
+      {/* end padding is tighter so the header actions sit closer to the edge */}
+      <div className={cx("flex shrink-0 items-center gap-2.5 ps-3.5 pe-2", drawer ? "py-3" : "h-[59px]")}>
         <BrandMark size={drawer ? 32 : 34} />
-        <div className="min-w-0 flex-1">
-          <div className={cx("leading-[1.2] font-semibold", drawer ? "text-[14px]" : "text-[15px]")}>دانش‌یار</div>
-          <div className={cx("truncate text-fg/45", drawer ? "text-[10.5px]" : "text-[11px]")}>دستیار اسناد و مقررات فنی</div>
+        <div className={cx("min-w-0 flex-1 leading-none font-semibold", drawer ? "text-[14px]" : "text-[15px]")}>دانش‌یار</div>
+        {/* header actions, grouped tight */}
+        <div className="flex shrink-0 items-center">
+          <PaletteTrigger />
+          {variant === "docked" && (
+            // same panel icon as the navbar's open button, with the sidebar strip shaded: "the sidebar is showing"
+            <IconButton label="جمع‌کردن سایدبار" size={32} tone="bare" onClick={onClose} className="text-[16px] text-fg/60">
+              <SidebarSimple weight="duotone" />
+            </IconButton>
+          )}
+          {drawer && (
+            <IconButton label="بستن" size={32} onClick={onClose} className="ms-1.5 text-[14px] text-fg/70">
+              <X />
+            </IconButton>
+          )}
         </div>
-        <PaletteTrigger />
-        {variant === "docked" && (
-          // «»» toward the start edge: tucks the (RTL, right-hand) sidebar away; the navbar's open button uses the panel icon
-          <IconButton label="جمع‌کردن سایدبار" size={32} tone="bare" onClick={onClose} className="text-[16px] text-fg/60">
-            <CaretDoubleRight />
-          </IconButton>
-        )}
-        {drawer && (
-          <IconButton label="بستن" size={32} onClick={onClose} className="text-[14px] text-fg/70">
-            <X />
-          </IconButton>
-        )}
       </div>
 
       {/* scrolling middle */}
