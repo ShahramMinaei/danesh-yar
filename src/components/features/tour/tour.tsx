@@ -18,7 +18,8 @@ import { stopTour, tourOrigin, useTourActive } from "./tour-store";
 
 type StepId = "samples" | "composer" | "mode" | "model" | "palette" | "theme";
 /** `touch`: the same idea without keyboard talk, for phones and tablets */
-type Step = { id: StepId; title: string; body: string; touch?: string };
+/** `settingsLink`: adds a «تنظیمات» link that ends the tour and opens the settings menu */
+type Step = { id: StepId; title: string; body: string; touch?: string; settingsLink?: boolean };
 
 const STEPS: Step[] = [
   { id: "samples", title: "پرسش‌های نمونه", body: "با یک کلیک یک پرسش واقعی در کادر پرسش قرار می‌گیرد." },
@@ -40,7 +41,12 @@ const STEPS: Step[] = [
     body: "با Ctrl+K به همه‌چیز دسترسی دارید — حتی با صفحه‌کلید فارسی.",
     touch: "همه فرمان‌ها، اسناد و پرسش‌های نمونه از همین‌جا در دسترس‌اند.",
   },
-  { id: "theme", title: "پوسته", body: "چهار پوسته رنگی؛ تغییر پوسته با انیمیشن دایره‌ای انجام می‌شود." },
+  {
+    id: "theme",
+    title: "حالت روشن و تاریک",
+    body: "با این کلید بین حالت روشن و تاریک جابه‌جا شوید؛ انتخاب شما برای بازدیدهای بعدی ذخیره می‌شود.",
+    settingsLink: true,
+  },
 ];
 
 const PAD = 6; // hole padding around the target
@@ -77,6 +83,17 @@ function findTarget(id: StepId): HTMLElement | null {
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(v, Math.max(lo, hi)));
+
+/** Ends the tour, then opens the settings menu from whichever gear is on screen (sidebar or rail). */
+function openSettings() {
+  stopTour();
+  requestAnimationFrame(() => {
+    const gear = [...document.querySelectorAll<HTMLElement>('[aria-label="تنظیمات"][aria-haspopup="menu"]')].find(
+      (el) => el.getBoundingClientRect().width > 0 && !el.closest("[inert]"),
+    );
+    gear?.click();
+  });
+}
 
 export function Tour() {
   const active = useTourActive();
@@ -379,6 +396,19 @@ function TourRun({ closing }: { closing: boolean }) {
         <p id={bodyId} className="m-0 text-[12.5px] leading-[1.85] text-pretty text-fg/65">
           {touch && step.touch ? step.touch : isMac ? step.body.replace("Ctrl+K", "⌘K") : step.body}
         </p>
+        {step.settingsLink && (
+          <p className="mt-2 mb-0 text-[12px] leading-[1.8] text-fg/50">
+            برای پوسته‌های دیگر به بخش{" "}
+            <button
+              type="button"
+              onClick={openSettings}
+              className="font-medium text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-accent-hi"
+            >
+              تنظیمات
+            </button>{" "}
+            مراجعه کنید.
+          </p>
+        )}
         <div className="mt-4 flex items-center gap-2">
           <button
             type="button"
