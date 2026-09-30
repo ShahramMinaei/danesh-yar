@@ -15,6 +15,7 @@ import { FeedbackForm } from "./features/feedback/feedback-form";
 import { StopHotkey } from "./features/stream/stop-hotkey";
 import { ThemeColorMeta } from "./features/theme/theme-color-meta";
 import { Tour } from "./features/tour/tour";
+import { TourOffer } from "./features/tour/tour-offer";
 import { SidebarPanel, SidebarRail } from "./layout/sidebar";
 import { TopNav } from "./layout/top-nav";
 import { ChunkInspector } from "./modals/chunk-inspector";
@@ -205,6 +206,7 @@ export function Workspace() {
       <StopHotkey />
       <ThemeColorMeta />
       <Tour />
+      <TourOffer />
     </div>
   );
 }
